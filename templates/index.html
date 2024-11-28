@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホテル備品リクエスト</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 戻るボタン -->
+        <a href="https://aad7e7f1-198c-49f0-92b8-08ccccbed0b7-00-1qdkygoo8xhjl.sisko.replit.dev/" class="back-button">← 戻る</a>
+
+        <h1>備品リクエストフォーム</h1>
+        <form id="requestForm">
+            <div class="form-group">
+                <label for="社員番号">社員番号:</label>
+                <input type="text" id="社員番号" name="社員番号" placeholder="例: 12345" required>
+            </div>
+
+            <div class="form-group">
+                <label for="部屋番号">部屋番号:</label>
+                <input type="text" id="部屋番号" name="部屋番号" placeholder="例: 101" required>
+            </div>
+
+            <div class="form-group">
+                <label>必要備品:</label>
+                <div id="必要備品">
+                    {% for item in 備品リスト %}
+                    <div class="item">
+                        <label>
+                            <input type="checkbox" name="items" value="{{ item }}"> {{ item }}
+                        </label>
+                        <input type="number" class="quantity" name="quantity_{{ item }}" min="1" max="10" placeholder="数量">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="button" id="submitButton">送信</button>
+        </form>
+
+        <div id="responseMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById("submitButton").addEventListener("click", function() {
+            const 社員番号 = document.getElementById("社員番号").value;
+            const 部屋番号 = document.getElementById("部屋番号").value;
+            const 必要備品 = Array.from(document.querySelectorAll("input[name='items']:checked")).map(checkbox => {
+                const itemName = checkbox.value;
+                const quantityInput = document.querySelector(`input[name='quantity_${itemName}']`);
+                const quantity = quantityInput.value || 1; // デフォルトは1
+                return { itemName, quantity: parseInt(quantity, 10) };
+            });
+
+            if (必要備品.length === 0) {
+                alert("少なくとも1つの備品を選択してください。");
+                return;
+            }
+
+            fetch("/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ 社員番号, 部屋番号, 必要備品 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("responseMessage").textContent = data.message;
+            })
+            .catch(error => console.error("エラー:", error));
+        });
+    </script>
+</body>
+</html>
