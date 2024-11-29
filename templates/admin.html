@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者専用ページ</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>リクエストログ</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>日時</th>
+                    <th>社員番号</th>
+                    <th>部屋番号</th>
+                    <th>必要備品</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in リクエストログ %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ log.社員番号 }}</td>
+                    <td>{{ log.部屋番号 }}</td>
+                    <td>
+                        {% for item in log.必要備品 %}
+                        <div>{{ item.itemName }}: {{ item.quantity }}</div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
